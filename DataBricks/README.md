@@ -1,6 +1,6 @@
-#Using Databricks For Covid-19 Analytics
+# Using Databricks For Covid-19 Analytics
 
-##Databricks enables a wide range of analytics use cases for Covid-19.
+## Databricks enables a wide range of analytics use cases for Covid-19.
 
 
 ## Assets
