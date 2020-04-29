@@ -1,0 +1,617 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "virtualMachines_sdc_name": {
+            "defaultValue": "sdc",
+            "type": "String"
+        },
+        "networkInterfaces_schNic_name": {
+            "defaultValue": "schNic",
+            "type": "String"
+        },
+        "virtualMachines_transformer_name": {
+            "defaultValue": "transformer",
+            "type": "String"
+        },
+        "publicIPAddresses_schPublicIP_name": {
+            "defaultValue": "schPublicIP",
+            "type": "String"
+        },
+        "publicIPAddresses_sdcPublicIP_name": {
+            "defaultValue": "sdcPublicIP",
+            "type": "String"
+        },
+        "virtualNetworks_streamsetsVnet_name": {
+            "defaultValue": "streamsetsVnet",
+            "type": "String"
+        },
+        "networkInterfaces_streamsetsNic_name": {
+            "defaultValue": "streamsetsNic",
+            "type": "String"
+        },
+        "networkInterfaces_transformerNic_name": {
+            "defaultValue": "transformerNic",
+            "type": "String"
+        },
+        "publicIPAddresses_transformerPublicIP_name": {
+            "defaultValue": "transformerPublicIP",
+            "type": "String"
+        },
+        "availabilitySets_streamsetsAvailabilitySet_name": {
+            "defaultValue": "streamsetsAvailabilitySet",
+            "type": "String"
+        },
+        "networkSecurityGroups_streamsetsNetworkSecurityGroup_name": {
+            "defaultValue": "streamsetsNetworkSecurityGroup",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "type": "Microsoft.Network/networkSecurityGroups",
+            "apiVersion": "2018-12-01",
+            "name": "[parameters('networkSecurityGroups_streamsetsNetworkSecurityGroup_name')]",
+            "location": "usgovvirginia",
+            "properties": {
+                "provisioningState": "Succeeded",
+                "resourceGuid": "4e2d3bcd-4cd1-4851-86a5-bd7399397fa8",
+                "securityRules": [
+                    {
+                        "name": "[concat(parameters('networkSecurityGroups_streamsetsNetworkSecurityGroup_name'), 'RuleSSH')]",
+                        "etag": "W/\"de95e98e-7e1e-4232-bf27-24ae22e33de3\"",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "protocol": "Tcp",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "22",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 1000,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                        }
+                    }
+                ],
+                "defaultSecurityRules": [
+                    {
+                        "name": "AllowVnetInBound",
+                        "etag": "W/\"de95e98e-7e1e-4232-bf27-24ae22e33de3\"",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "description": "Allow inbound traffic from all VMs in VNET",
+                            "protocol": "*",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "*",
+                            "sourceAddressPrefix": "VirtualNetwork",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 65000,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                        }
+                    },
+                    {
+                        "name": "AllowAzureLoadBalancerInBound",
+                        "etag": "W/\"de95e98e-7e1e-4232-bf27-24ae22e33de3\"",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "description": "Allow inbound traffic from azure load balancer",
+                            "protocol": "*",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "*",
+                            "sourceAddressPrefix": "AzureLoadBalancer",
+                            "destinationAddressPrefix": "*",
+                            "access": "Allow",
+                            "priority": 65001,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                        }
+                    },
+                    {
+                        "name": "DenyAllInBound",
+                        "etag": "W/\"de95e98e-7e1e-4232-bf27-24ae22e33de3\"",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "description": "Deny all inbound traffic",
+                            "protocol": "*",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "*",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Deny",
+                            "priority": 65500,
+                            "direction": "Inbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                        }
+                    },
+                    {
+                        "name": "AllowVnetOutBound",
+                        "etag": "W/\"de95e98e-7e1e-4232-bf27-24ae22e33de3\"",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "description": "Allow outbound traffic from all VMs to all VMs in VNET",
+                            "protocol": "*",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "*",
+                            "sourceAddressPrefix": "VirtualNetwork",
+                            "destinationAddressPrefix": "VirtualNetwork",
+                            "access": "Allow",
+                            "priority": 65000,
+                            "direction": "Outbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                        }
+                    },
+                    {
+                        "name": "AllowInternetOutBound",
+                        "etag": "W/\"de95e98e-7e1e-4232-bf27-24ae22e33de3\"",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "description": "Allow outbound traffic from all VMs to Internet",
+                            "protocol": "*",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "*",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "Internet",
+                            "access": "Allow",
+                            "priority": 65001,
+                            "direction": "Outbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                        }
+                    },
+                    {
+                        "name": "DenyAllOutBound",
+                        "etag": "W/\"de95e98e-7e1e-4232-bf27-24ae22e33de3\"",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "description": "Deny all outbound traffic",
+                            "protocol": "*",
+                            "sourcePortRange": "*",
+                            "destinationPortRange": "*",
+                            "sourceAddressPrefix": "*",
+                            "destinationAddressPrefix": "*",
+                            "access": "Deny",
+                            "priority": 65500,
+                            "direction": "Outbound",
+                            "sourcePortRanges": [],
+                            "destinationPortRanges": [],
+                            "sourceAddressPrefixes": [],
+                            "destinationAddressPrefixes": []
+                        }
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2018-12-01",
+            "name": "[parameters('publicIPAddresses_schPublicIP_name')]",
+            "location": "usgovvirginia",
+            "sku": {
+                "name": "Basic"
+            },
+            "properties": {
+                "provisioningState": "Succeeded",
+                "resourceGuid": "8bd275c6-d971-4ce7-ab83-e29808534015",
+                "publicIPAddressVersion": "IPv4",
+                "publicIPAllocationMethod": "Dynamic",
+                "idleTimeoutInMinutes": 4,
+                "ipTags": []
+            }
+        },
+        {
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2018-12-01",
+            "name": "[parameters('publicIPAddresses_sdcPublicIP_name')]",
+            "location": "usgovvirginia",
+            "sku": {
+                "name": "Basic"
+            },
+            "properties": {
+                "provisioningState": "Succeeded",
+                "resourceGuid": "ab1ca570-0d97-4b98-9bfe-6d8656fffe4f",
+                "ipAddress": "13.72.35.9",
+                "publicIPAddressVersion": "IPv4",
+                "publicIPAllocationMethod": "Dynamic",
+                "idleTimeoutInMinutes": 4,
+                "ipTags": []
+            }
+        },
+        {
+            "type": "Microsoft.Network/publicIPAddresses",
+            "apiVersion": "2018-12-01",
+            "name": "[parameters('publicIPAddresses_transformerPublicIP_name')]",
+            "location": "usgovvirginia",
+            "sku": {
+                "name": "Basic"
+            },
+            "properties": {
+                "provisioningState": "Succeeded",
+                "resourceGuid": "d96483a8-48c0-45c6-97a7-8de2773c0d27",
+                "ipAddress": "52.227.23.32",
+                "publicIPAddressVersion": "IPv4",
+                "publicIPAllocationMethod": "Dynamic",
+                "idleTimeoutInMinutes": 4,
+                "ipTags": []
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2018-12-01",
+            "name": "[parameters('virtualNetworks_streamsetsVnet_name')]",
+            "location": "usgovvirginia",
+            "properties": {
+                "provisioningState": "Succeeded",
+                "resourceGuid": "4078a29a-b317-4aa0-9fe9-d2ed348aaee3",
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "10.0.0.0/16"
+                    ]
+                },
+                "dhcpOptions": {
+                    "dnsServers": []
+                },
+                "subnets": [
+                    {
+                        "name": "streamsetsSubnet",
+                        "etag": "W/\"64cba5ae-98dc-4f08-992d-2ae0ab05f002\"",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "10.0.0.0/24",
+                            "delegations": []
+                        }
+                    }
+                ],
+                "virtualNetworkPeerings": [],
+                "enableDdosProtection": false,
+                "enableVmProtection": false
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkSecurityGroups/securityRules",
+            "apiVersion": "2018-12-01",
+            "name": "[concat(parameters('networkSecurityGroups_streamsetsNetworkSecurityGroup_name'), '/', parameters('networkSecurityGroups_streamsetsNetworkSecurityGroup_name'), 'RuleSSH')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_streamsetsNetworkSecurityGroup_name'))]"
+            ],
+            "properties": {
+                "provisioningState": "Succeeded",
+                "protocol": "Tcp",
+                "sourcePortRange": "*",
+                "destinationPortRange": "22",
+                "sourceAddressPrefix": "*",
+                "destinationAddressPrefix": "*",
+                "access": "Allow",
+                "priority": 1000,
+                "direction": "Inbound",
+                "sourcePortRanges": [],
+                "destinationPortRanges": [],
+                "sourceAddressPrefixes": [],
+                "destinationAddressPrefixes": []
+            }
+        },
+        {
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "apiVersion": "2018-12-01",
+            "name": "[concat(parameters('virtualNetworks_streamsetsVnet_name'), '/streamsetsSubnet')]",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_streamsetsVnet_name'))]"
+            ],
+            "properties": {
+                "provisioningState": "Succeeded",
+                "addressPrefix": "10.0.0.0/24",
+                "delegations": []
+            }
+        },
+        {
+            "type": "Microsoft.Compute/availabilitySets",
+            "apiVersion": "2018-10-01",
+            "name": "[parameters('availabilitySets_streamsetsAvailabilitySet_name')]",
+            "location": "usgovvirginia",
+            "sku": {
+                "name": "Aligned"
+            },
+            "properties": {
+                "platformUpdateDomainCount": 5,
+                "platformFaultDomainCount": 2,
+                "virtualMachines": [
+                    {
+                        "id": "[resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachines_sdc_name'))]"
+                    },
+                    {
+                        "id": "[resourceId('Microsoft.Compute/virtualMachines', parameters('virtualMachines_transformer_name'))]"
+                    }
+                ]
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2018-10-01",
+            "name": "[parameters('virtualMachines_sdc_name')]",
+            "location": "usgovvirginia",
+            "dependsOn": [
+                "[resourceId('Microsoft.Compute/availabilitySets', parameters('availabilitySets_streamsetsAvailabilitySet_name'))]",
+                "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_streamsetsNic_name'))]"
+            ],
+            "properties": {
+                "availabilitySet": {
+                    "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('availabilitySets_streamsetsAvailabilitySet_name'))]"
+                },
+                "hardwareProfile": {
+                    "vmSize": "Standard_D4s_v3"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "OpenLogic",
+                        "offer": "CentOS",
+                        "sku": "7.5",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "osType": "Linux",
+                        "name": "[concat(parameters('virtualMachines_sdc_name'), '_OsDisk_1_beebbcee6c1542c298b83451dc589172')]",
+                        "createOption": "FromImage",
+                        "caching": "ReadWrite",
+                        "managedDisk": {
+                            "storageAccountType": "Premium_LRS"
+                        },
+                        "diskSizeGB": 30
+                    },
+                    "dataDisks": []
+                },
+                "osProfile": {
+                    "computerName": "[parameters('virtualMachines_sdc_name')]",
+                    "adminUsername": "thomasganka",
+                    "linuxConfiguration": {
+                        "disablePasswordAuthentication": true,
+                        "ssh": {
+                            "publicKeys": [
+                                {
+                                    "path": "/home/thomasganka/.ssh/authorized_keys",
+                                    "keyData": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDFAWB8uTI26CucX4z3h6+JooHawX+MDhmlaBxM1M105C7D9pUDoffKnb4D4RZPOpN0IgV7SZEmZ5dFMCk4Bkpx82OSVGUHDOAIaRfRNgxYeoZjcmawIGRbMpzYexad8jNV6YvUSP91Cf6Bq+0OzyURp0FIwg/VP4cNTa7m4xVKBCh2/MpJahlrDsniBrTGs/Ga0wk1KpzsOpwR1MfFJOY47PB1CEdnYdAmxHIKKjydXyvgiqUq0I8g8LUhtdT/hg8yTXMY1ziLGBUHeUtfG0tLrYXkgHp72nVJbtnDAB8zKa1UYxuTY1uCxV2k5D2rBaZy4JXpj+Erz+sloIvzTkSab3DT0QESETNfUoiXo1WoOKDgZiAbwzL/AhhHkLRdayxpwaZqB2rEOc6ZMhp9qF+D4vdMYNcO2jndFPZpaN/m0bYxOf+Ilf63aja91ICIUQzZOhPbH9YkZHJHwGo1TvVQGs3ZLJTZ+Fe5w6QzVORqA+sxfWW3dhWycnwshMwblI3/bGAGgIgUYANG2Dzxgd9Ry1Jzm/RX7u2CYFyR7NLli60VQstPPnpV2vMMJzwpTebcFZhAXHMCHq4RR0Tf4mCIEjgpTiNN4WOH6C/ySNV1wCUnpYduYBF/r4183YkpWhUOWFFwOSsbOaYZc0M0XHBgb8jwkn+OqpJiqJmT8mFhvQ== thomas.ganka@streamsets.com\n"
+                                }
+                            ]
+                        },
+                        "provisionVMAgent": true
+                    },
+                    "secrets": [],
+                    "allowExtensionOperations": true
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_streamsetsNic_name'))]",
+                            "properties": {
+                                "primary": true
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Compute/virtualMachines",
+            "apiVersion": "2018-10-01",
+            "name": "[parameters('virtualMachines_transformer_name')]",
+            "location": "usgovvirginia",
+            "dependsOn": [
+                "[resourceId('Microsoft.Compute/availabilitySets', parameters('availabilitySets_streamsetsAvailabilitySet_name'))]",
+                "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_transformerNic_name'))]"
+            ],
+            "properties": {
+                "availabilitySet": {
+                    "id": "[resourceId('Microsoft.Compute/availabilitySets', parameters('availabilitySets_streamsetsAvailabilitySet_name'))]"
+                },
+                "hardwareProfile": {
+                    "vmSize": "Standard_D4s_v3"
+                },
+                "storageProfile": {
+                    "imageReference": {
+                        "publisher": "OpenLogic",
+                        "offer": "CentOS",
+                        "sku": "7.5",
+                        "version": "latest"
+                    },
+                    "osDisk": {
+                        "osType": "Linux",
+                        "name": "[concat(parameters('virtualMachines_transformer_name'), '_OsDisk_1_d276a2e67f854eb4936ba5a2ae59613b')]",
+                        "createOption": "FromImage",
+                        "caching": "ReadWrite",
+                        "managedDisk": {
+                            "storageAccountType": "Premium_LRS"
+                        },
+                        "diskSizeGB": 30
+                    },
+                    "dataDisks": []
+                },
+                "osProfile": {
+                    "computerName": "[parameters('virtualMachines_transformer_name')]",
+                    "adminUsername": "thomasganka",
+                    "linuxConfiguration": {
+                        "disablePasswordAuthentication": true,
+                        "ssh": {
+                            "publicKeys": [
+                                {
+                                    "path": "/home/thomasganka/.ssh/authorized_keys",
+                                    "keyData": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDFAWB8uTI26CucX4z3h6+JooHawX+MDhmlaBxM1M105C7D9pUDoffKnb4D4RZPOpN0IgV7SZEmZ5dFMCk4Bkpx82OSVGUHDOAIaRfRNgxYeoZjcmawIGRbMpzYexad8jNV6YvUSP91Cf6Bq+0OzyURp0FIwg/VP4cNTa7m4xVKBCh2/MpJahlrDsniBrTGs/Ga0wk1KpzsOpwR1MfFJOY47PB1CEdnYdAmxHIKKjydXyvgiqUq0I8g8LUhtdT/hg8yTXMY1ziLGBUHeUtfG0tLrYXkgHp72nVJbtnDAB8zKa1UYxuTY1uCxV2k5D2rBaZy4JXpj+Erz+sloIvzTkSab3DT0QESETNfUoiXo1WoOKDgZiAbwzL/AhhHkLRdayxpwaZqB2rEOc6ZMhp9qF+D4vdMYNcO2jndFPZpaN/m0bYxOf+Ilf63aja91ICIUQzZOhPbH9YkZHJHwGo1TvVQGs3ZLJTZ+Fe5w6QzVORqA+sxfWW3dhWycnwshMwblI3/bGAGgIgUYANG2Dzxgd9Ry1Jzm/RX7u2CYFyR7NLli60VQstPPnpV2vMMJzwpTebcFZhAXHMCHq4RR0Tf4mCIEjgpTiNN4WOH6C/ySNV1wCUnpYduYBF/r4183YkpWhUOWFFwOSsbOaYZc0M0XHBgb8jwkn+OqpJiqJmT8mFhvQ== thomas.ganka@streamsets.com\n"
+                                }
+                            ]
+                        },
+                        "provisionVMAgent": true
+                    },
+                    "secrets": [],
+                    "allowExtensionOperations": true
+                },
+                "networkProfile": {
+                    "networkInterfaces": [
+                        {
+                            "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaces_transformerNic_name'))]",
+                            "properties": {
+                                "primary": true
+                            }
+                        }
+                    ]
+                }
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2018-12-01",
+            "name": "[parameters('networkInterfaces_schNic_name')]",
+            "location": "usgovvirginia",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_schPublicIP_name'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_streamsetsVnet_name'), 'streamsetsSubnet')]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_streamsetsNetworkSecurityGroup_name'))]"
+            ],
+            "properties": {
+                "provisioningState": "Succeeded",
+                "resourceGuid": "b5585b81-5849-4cbc-b4d4-182f0d12238e",
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "etag": "W/\"e3d1c49f-0629-4d0e-afab-d79f78cca0dc\"",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "privateIPAddress": "10.0.0.6",
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_schPublicIP_name'))]"
+                            },
+                            "subnet": {
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_streamsetsVnet_name'), 'streamsetsSubnet')]"
+                            },
+                            "primary": true,
+                            "privateIPAddressVersion": "IPv4"
+                        }
+                    }
+                ],
+                "dnsSettings": {
+                    "dnsServers": [],
+                    "appliedDnsServers": [],
+                    "internalDomainNameSuffix": "tkrhqqaxwoqevh5j0lwtjcvo2d.ax.internal.usgovcloudapp.net"
+                },
+                "enableAcceleratedNetworking": false,
+                "enableIPForwarding": false,
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_streamsetsNetworkSecurityGroup_name'))]"
+                },
+                "tapConfigurations": []
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2018-12-01",
+            "name": "[parameters('networkInterfaces_streamsetsNic_name')]",
+            "location": "usgovvirginia",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_sdcPublicIP_name'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_streamsetsVnet_name'), 'streamsetsSubnet')]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_streamsetsNetworkSecurityGroup_name'))]"
+            ],
+            "properties": {
+                "provisioningState": "Succeeded",
+                "resourceGuid": "24f39145-019a-4b9e-9f78-b3cdaa774e63",
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "etag": "W/\"bfab8bc1-9537-416a-84ab-ecdb9b480cb3\"",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "privateIPAddress": "10.0.0.4",
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_sdcPublicIP_name'))]"
+                            },
+                            "subnet": {
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_streamsetsVnet_name'), 'streamsetsSubnet')]"
+                            },
+                            "primary": true,
+                            "privateIPAddressVersion": "IPv4"
+                        }
+                    }
+                ],
+                "dnsSettings": {
+                    "dnsServers": [],
+                    "appliedDnsServers": [],
+                    "internalDomainNameSuffix": "tkrhqqaxwoqevh5j0lwtjcvo2d.ax.internal.usgovcloudapp.net"
+                },
+                "macAddress": "00-1D-D8-01-89-6C",
+                "enableAcceleratedNetworking": false,
+                "enableIPForwarding": false,
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_streamsetsNetworkSecurityGroup_name'))]"
+                },
+                "primary": true,
+                "tapConfigurations": []
+            }
+        },
+        {
+            "type": "Microsoft.Network/networkInterfaces",
+            "apiVersion": "2018-12-01",
+            "name": "[parameters('networkInterfaces_transformerNic_name')]",
+            "location": "usgovvirginia",
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_transformerPublicIP_name'))]",
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_streamsetsVnet_name'), 'streamsetsSubnet')]",
+                "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_streamsetsNetworkSecurityGroup_name'))]"
+            ],
+            "properties": {
+                "provisioningState": "Succeeded",
+                "resourceGuid": "6af526a7-8bf3-4f32-9b37-e4fd49670cee",
+                "ipConfigurations": [
+                    {
+                        "name": "ipconfig1",
+                        "etag": "W/\"5f3c8b8e-fae6-4e13-bd0b-7ec8058d7020\"",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "privateIPAddress": "10.0.0.5",
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_transformerPublicIP_name'))]"
+                            },
+                            "subnet": {
+                                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_streamsetsVnet_name'), 'streamsetsSubnet')]"
+                            },
+                            "primary": true,
+                            "privateIPAddressVersion": "IPv4"
+                        }
+                    }
+                ],
+                "dnsSettings": {
+                    "dnsServers": [],
+                    "appliedDnsServers": [],
+                    "internalDomainNameSuffix": "tkrhqqaxwoqevh5j0lwtjcvo2d.ax.internal.usgovcloudapp.net"
+                },
+                "macAddress": "00-1D-D8-01-6F-F9",
+                "enableAcceleratedNetworking": false,
+                "enableIPForwarding": false,
+                "networkSecurityGroup": {
+                    "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('networkSecurityGroups_streamsetsNetworkSecurityGroup_name'))]"
+                },
+                "primary": true,
+                "tapConfigurations": []
+            }
+        }
+    ]
+}

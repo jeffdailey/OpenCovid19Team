@@ -1,0 +1,61 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "virtualMachines_sdc_name": {
+            "value": [{
+                "name": "sdc"
+            }]
+        },
+        "networkInterfaces_schNic_name": {
+            "value": [{
+                "name": "schNic"
+            }]
+        },
+        "virtualMachines_transformer_name": {
+            "value": [{
+                "name": "transformer"
+            }]
+        },
+        "publicIPAddresses_schPublicIP_name": {
+            "value": [{
+                "name": "schPublicIP"
+            }]
+        },
+        "publicIPAddresses_sdcPublicIP_name": {
+            "value": [{
+                "name": "sdcPublicIP"
+            }]
+        },
+        "virtualNetworks_streamsetsVnet_name": {
+            "value": [{
+                "name": "streamsetsVnet"
+            }]
+        },
+        "networkInterfaces_streamsetsNic_name": {
+            "value": [{
+                "name": "sdcNic"
+            }]
+        },
+        "networkInterfaces_transformerNic_name": {
+            "value": [{
+                "name": "transformerNic"
+            }]
+        },
+        "publicIPAddresses_transformerPublicIP_name": {
+            "value": [{
+                "name": "transformerPublicIP"
+            }]
+        },
+        "availabilitySets_streamsetsAvailabilitySet_name": {
+            "value": [{
+                "name": "streamsetsAvailabilitySet"
+            }]
+        },
+        "networkSecurityGroups_streamsetsNetworkSecurityGroup_name": {
+            "value": [{
+                "name": "streamsetsNetworkSecurityGroup"
+            }]
+        }
+    }
+}
