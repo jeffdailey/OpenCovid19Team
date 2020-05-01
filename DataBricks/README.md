@@ -14,6 +14,13 @@ Sample Notebooks Covering
 *   Loading US Census and New York Times Covid Cases
 
 
+## Setup
+The ARM template can be used to provision a Databricks workspace. The parameters provided to the template are
+*   Workspace Name
+*   Virtual Network To Use
+
+After the workspace is deployed either using the UI or the databricks cli the sample notebooks can be used to create and populate a set of base tables
+
 ## Use Cases
 
 One use case is comparing IMHE models to actual data. The figure below is the IHME predictions made on April 1st compared with the reported deaths to April 18th.Using this view shows the initial model over predicted the number of deaths.
