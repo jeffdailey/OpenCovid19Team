@@ -9,9 +9,9 @@ Streamsets Pipelines
 
 # Connect to Azure Gov via CLI
 az cloud set --name AzureUSGovernment
-az login
+az login -u youruser@covidtaskforce.onmicrosoft.us -p changeit123!
 
 # Create a deployment from Streamsets ARM template via CLI
 az group deployment create \
     --resource-group streamsets \
-    --template-file azure/streamsetsResourceGroup.json
+    --template-file azure/template.json
