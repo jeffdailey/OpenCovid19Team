@@ -14,4 +14,4 @@ az login -u youruser@covidtaskforce.onmicrosoft.us -p changeit123!
 # Create a deployment from Streamsets ARM template via CLI
 az group deployment create \
     --resource-group streamsets \
-    --template-file azure/template.json
+    --template-file azure/deployments/template.json
