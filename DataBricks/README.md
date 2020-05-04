@@ -19,6 +19,11 @@ The ARM template can be used to provision a Databricks workspace. The parameters
 *   Workspace Name
 *   Virtual Network To Use
 
+### ARM Deployment
+Sample Command To Deploy Workspace
+
+az group deployment create --name deploy_databricks --subscription <SUBSCRIPTION ID> --resource-group <EXISTING RG> --template-file azuredeploy.json --parameters nsgName="<nsg to create>" vnetName="<VNET to create>" workspaceName="<workspace name>" privateSubnetName="<subnet to create>" publicSubnetName="<subnet to create>" location="<Azure Region To Deploy In>"
+
 After the workspace is deployed either using the UI or the databricks cli the sample notebooks can be used to create and populate a set of base tables
 
 ## Use Cases
