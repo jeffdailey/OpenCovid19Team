@@ -26,6 +26,10 @@ az group deployment create --name deploy_databricks --subscription <SUBSCRIPTION
 
 After the workspace is deployed either using the UI or the databricks cli the sample notebooks can be used to create and populate a set of base tables
 
+### Creating Tables
+
+### Schedule Jobs
+In the main folder where all the notebooks were imported there is a Data Loads folder. Inside there is a NYTimes notebook. This nootebook should be scheduled to run everyday around noon to update the NY Times Covid Data
 ## Use Cases
 
 One use case is comparing IMHE models to actual data. The figure below is the IHME predictions made on April 1st compared with the reported deaths to April 18th.Using this view shows the initial model over predicted the number of deaths.
