@@ -3,4 +3,4 @@ An Open Source collaboration and reference architecture of how to use Azure Data
 ![Open Covid TaskForce Splash](OpenCovidTaskForce.gif)
 
 Open Covid Platform Presentation: 
-![OpenCovidPDF](OpenCovidPlatform.pdf)
+[OpenCovidPDF](OpenCovidPlatform.pdf "Open Covid Platform Presentation PDF")
