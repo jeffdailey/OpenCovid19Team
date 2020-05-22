@@ -15,6 +15,4 @@ az login -u youruser@covidtaskforce.onmicrosoft.us -p changeit123!
 az group create --name $resourceGroup --location "USGov Virginia"
 
 # Create a deployment from Streamsets ARM template via CLI
-az group deployment create \
-    --resource-group streamsets \
-    --template-file azure/deployments/template.json
+az group deployment create --resource-group streamsets --template-file azure/deployments/template.json
